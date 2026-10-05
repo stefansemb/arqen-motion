@@ -1,0 +1,115 @@
+<!doctype html>
+<html data-composition-variables='[
+  {"id":"title","type":"string","label":"Rubrik","default":"Claude Opus 5.5 vs GPT-6"},
+  {"id":"leftName","type":"string","label":"Vänster namn","default":"Claude"},
+  {"id":"leftLogo","type":"string","label":"Vänster logga (bild, valfri)","default":"","ui":"image"},
+  {"id":"rightName","type":"string","label":"Höger namn","default":"GPT"},
+  {"id":"rightLogo","type":"string","label":"Höger logga (bild, valfri)","default":"","ui":"image"},
+  {"id":"rows","type":"string","label":"Rader: etikett | vänster | höger (max 5)","default":"Context window | 1M | 400K\nSWE-bench | 82% | 78%\nPrice / 1M tokens | $15 | $10","ui":"textarea"},
+  {"id":"source","type":"string","label":"Källa","default":""},
+  {"id":"duration","type":"number","label":"Längd (sekunder)","default":8},
+  {"id":"accent","type":"color","label":"Accent (vänster)","default":"#8b5cf6"},
+  {"id":"accent2","type":"color","label":"Accent 2 (höger)","default":"#22d3ee"}
+]'>
+<head>
+  <meta charset="utf-8">
+  <title>Jämförelse</title>
+  <link rel="stylesheet" href="_shared/base.css">
+  <style>
+    .stage { position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%); width: min(88%, calc(var(--u) * 160)); }
+    .portrait .stage { width: 92%; top: 54%; }
+    .head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: calc(var(--u) * 5); }
+    .side { display: flex; align-items: center; gap: calc(var(--u) * 2.5); }
+    .side.l { justify-content: flex-end; }
+    .side.r { flex-direction: row-reverse; justify-content: flex-end; }
+    .portrait .side { flex-direction: column; gap: calc(var(--u) * 1.5); }
+    .logo {
+      width: calc(var(--u) * 11); height: calc(var(--u) * 11); border-radius: 26%; flex: none; overflow: hidden;
+      display: grid; place-items: center; font-size: calc(var(--u) * 5.5); font-weight: 800; color: #fff;
+    }
+    .l .logo { background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 45%, #000)); }
+    .r .logo { background: linear-gradient(135deg, var(--accent2), color-mix(in srgb, var(--accent2) 40%, #000)); }
+    .logo.img { background: #fff; padding: calc(var(--u) * 1.4); }
+    .logo img { width: 100%; height: 100%; object-fit: contain; }
+    .name { font-size: calc(var(--u) * 5); font-weight: 800; letter-spacing: -0.02em; }
+    .vs {
+      margin: 0 calc(var(--u) * 5); width: calc(var(--u) * 9); height: calc(var(--u) * 9); border-radius: 50%;
+      display: grid; place-items: center; font-size: calc(var(--u) * 3); font-weight: 900; letter-spacing: 0.05em;
+      background: #ffffff10; border: 2px solid var(--line);
+    }
+    .row { display: grid; grid-template-columns: 1fr calc(var(--u) * 30) 1fr; align-items: center; padding: calc(var(--u) * 1.8) 0; border-top: 1px solid var(--line); }
+    .portrait .row { grid-template-columns: 1fr calc(var(--u) * 26) 1fr; }
+    .label { text-align: center; font-size: calc(var(--u) * 2.7); color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 calc(var(--u) * 1); }
+    .cell { display: flex; align-items: center; gap: calc(var(--u) * 1.6); }
+    .cell.l { flex-direction: row-reverse; }
+    .val { font-size: calc(var(--u) * 4.4); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .portrait .val { font-size: calc(var(--u) * 5.6); }
+    .portrait .name { font-size: calc(var(--u) * 6.5); }
+    .portrait .logo { width: calc(var(--u) * 15); height: calc(var(--u) * 15); font-size: calc(var(--u) * 7.5); }
+    .portrait .row { padding: calc(var(--u) * 3.2) 0; }
+    .portrait .label { font-size: calc(var(--u) * 3.2); }
+    .portrait .barbox { height: calc(var(--u) * 2.4); }
+    .barbox { flex: 1; height: calc(var(--u) * 2); display: flex; }
+    .cell.l .barbox { justify-content: flex-end; }
+    .bar { height: 100%; border-radius: 99px; }
+    .cell.l .bar { background: linear-gradient(270deg, var(--accent), color-mix(in srgb, var(--accent) 50%, transparent)); transform-origin: right center; }
+    .cell.r .bar { background: linear-gradient(90deg, var(--accent2), color-mix(in srgb, var(--accent2) 50%, transparent)); transform-origin: left center; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="compare" data-width="{{W}}" data-height="{{H}}" data-start="0" data-duration="{{DURATION}}">
+    <div class="title" id="title"></div>
+    <div class="stage">
+      <div class="head">
+        <div class="side l" id="left"></div>
+        <div class="vs" id="vs">VS</div>
+        <div class="side r" id="right"></div>
+      </div>
+      <div id="rows"></div>
+    </div>
+    <div class="source"></div>
+    <script src="_shared/gsap.min.js"></script>
+    <script src="_shared/base.js"></script>
+    <script>
+      const { v } = M;
+      document.getElementById("title").innerHTML = M.rich(v.title);
+      const side = (name, logo) => {
+        const mark = logo ? `<div class="logo img"><img src="${M.esc(logo)}"></div>` : `<div class="logo">${M.esc((name || "?").trim()[0] || "?")}</div>`;
+        return `${mark}<div class="name">${M.esc(name)}</div>`;
+      };
+      document.getElementById("left").innerHTML = side(v.leftName, v.leftLogo);
+      document.getElementById("right").innerHTML = side(v.rightName, v.rightLogo);
+
+      const rowsEl = document.getElementById("rows");
+      const rows = M.lines(v.rows).slice(0, 5).map((line) => {
+        const [label, a = "", b = ""] = M.cells(line);
+        const na = M.num(a), nb = M.num(b);
+        const bars = na !== null && nb !== null && Math.max(na, nb) > 0;
+        const max = Math.max(na, nb);
+        const cell = (cls, val, n) =>
+          `<div class="cell ${cls}"><div class="val">${M.rich(val)}</div>` +
+          (bars ? `<div class="barbox"><div class="bar" style="width:${Math.max(4, (n / max) * 100)}%"></div></div>` : "") + `</div>`;
+        const el = document.createElement("div");
+        el.className = "row";
+        el.innerHTML = cell("l", a, na) + `<div class="label">${M.esc(label)}</div>` + cell("r", b, nb);
+        rowsEl.appendChild(el);
+        return el;
+      });
+
+      const tl = M.timeline();
+      tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
+      tl.from("#left", { opacity: 0, x: -80, duration: 0.7, ease: "power3.out" }, 0.2);
+      tl.from("#right", { opacity: 0, x: 80, duration: 0.7, ease: "power3.out" }, 0.2);
+      tl.from("#vs", { opacity: 0, scale: 0.3, duration: 0.5, ease: "back.out(2.5)" }, 0.5);
+      const step = Math.min(0.5, (M.dur * 0.4) / Math.max(1, rows.length));
+      rows.forEach((row, i) => {
+        const t = 0.9 + i * step;
+        tl.from(row, { opacity: 0, y: 20, duration: 0.45, ease: "power2.out" }, t);
+        const bars = row.querySelectorAll(".bar");
+        if (bars.length) tl.from(bars, { scaleX: 0, duration: 0.8, ease: "power3.out" }, t + 0.15);
+      });
+      M.finish(tl);
+    </script>
+  </div>
+</body>
+</html>

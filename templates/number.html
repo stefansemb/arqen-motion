@@ -1,0 +1,63 @@
+<!doctype html>
+<html data-composition-variables='[
+  {"id":"value","type":"number","label":"Värde","default":40},
+  {"id":"decimals","type":"number","label":"Decimaler","default":0},
+  {"id":"prefix","type":"string","label":"Före siffran (t.ex. $)","default":"$"},
+  {"id":"suffix","type":"string","label":"Efter siffran (t.ex. B, %, x)","default":"B"},
+  {"id":"label","type":"string","label":"Text under (*ord* = markerat)","default":"raised in OpenAI&#39;s *latest* funding round"},
+  {"id":"source","type":"string","label":"Källa","default":"Reuters"},
+  {"id":"duration","type":"number","label":"Längd (sekunder)","default":6},
+  {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
+  {"id":"accent2","type":"color","label":"Accent 2","default":"#22d3ee"}
+]'>
+<head>
+  <meta charset="utf-8">
+  <title>Animerad siffra</title>
+  <link rel="stylesheet" href="_shared/base.css">
+  <style>
+    .stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .num {
+      font-size: calc(var(--u) * 26); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+      font-variant-numeric: tabular-nums; white-space: nowrap;
+      background: linear-gradient(120deg, #fff 15%, var(--accent2) 60%, var(--accent));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .bar { width: calc(var(--u) * 14); height: calc(var(--u) * 0.8); border-radius: 99px; margin: calc(var(--u) * 3.5) 0; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .label { font-size: calc(var(--u) * 5); font-weight: 600; line-height: 1.2; max-width: 84%; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="number" data-width="{{W}}" data-height="{{H}}" data-start="0" data-duration="{{DURATION}}">
+    <div class="stage">
+      <div class="num" id="num"></div>
+      <div class="bar" id="bar"></div>
+      <div class="label" id="label"></div>
+    </div>
+    <div class="source"></div>
+    <script src="_shared/gsap.min.js"></script>
+    <script src="_shared/base.js"></script>
+    <script>
+      const { v } = M;
+      const value = +v.value || 0;
+      const dec = Math.max(0, Math.min(4, Math.round(+v.decimals || 0)));
+      const fmt = (n) => (v.prefix || "") + n.toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + (v.suffix || "");
+
+      const num = document.getElementById("num");
+      const label = document.getElementById("label");
+      label.innerHTML = M.rich(v.label);
+      M.fit(label, M.W * 0.84, M.H * 0.3);
+      num.textContent = fmt(value); // size for the final value, then count up to it
+      M.fit(num, M.W * 0.86);
+
+      const o = { n: 0 };
+      num.textContent = fmt(0);
+      const tl = M.timeline();
+      tl.from(".stage", { opacity: 0, scale: 0.92, duration: 0.6, ease: "power2.out" }, 0);
+      tl.to(o, { n: value, duration: Math.min(2, M.dur * 0.4), ease: "power3.out", onUpdate: () => (num.textContent = fmt(o.n)) }, 0.2);
+      tl.from("#bar", { scaleX: 0, duration: 0.7, ease: "power3.out" }, 0.5);
+      tl.from("#label", { opacity: 0, y: 30, duration: 0.6, ease: "power2.out" }, 0.8);
+      M.finish(tl);
+    </script>
+  </div>
+</body>
+</html>

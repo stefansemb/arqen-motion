@@ -1,0 +1,88 @@
+<!doctype html>
+<html data-composition-variables='[
+  {"id":"title","type":"string","label":"Rubrik","default":"The road to GPT-5"},
+  {"id":"events","type":"string","label":"Händelser, en per rad: år | text (max 7)","default":"2017 | Transformer paper\n2018 | GPT-1\n2020 | GPT-3\n2022 | ChatGPT launches\n2023 | GPT-4\n2025 | GPT-5","ui":"textarea"},
+  {"id":"source","type":"string","label":"Källa","default":""},
+  {"id":"duration","type":"number","label":"Längd (sekunder)","default":8},
+  {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
+  {"id":"accent2","type":"color","label":"Accent 2","default":"#22d3ee"}
+]'>
+<head>
+  <meta charset="utf-8">
+  <title>Tidslinje</title>
+  <link rel="stylesheet" href="_shared/base.css">
+  <style>
+    .stage { position: absolute; inset: 0; }
+    .track, .fill { position: absolute; border-radius: 99px; }
+    .track { background: var(--line); }
+    .fill { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .item { position: absolute; }
+    .dot {
+      position: absolute; width: calc(var(--u) * 2.6); height: calc(var(--u) * 2.6); border-radius: 50%;
+      background: var(--bg); border: calc(var(--u) * 0.6) solid var(--accent2); transform: translate(-50%, -50%);
+    }
+    .now .dot { background: var(--accent2); box-shadow: 0 0 calc(var(--u) * 3) var(--accent2); width: calc(var(--u) * 3.4); height: calc(var(--u) * 3.4); }
+    .year { font-size: calc(var(--u) * 4.8); font-weight: 800; color: var(--accent2); letter-spacing: -0.02em; }
+    .text { font-size: calc(var(--u) * 3.2); font-weight: 600; line-height: 1.25; }
+
+    /* landscape: horizontal line, year above, text below */
+    .track, .fill { left: 8%; width: 84%; top: 56%; height: calc(var(--u) * 0.5); transform: translateY(-50%); }
+    .fill { transform-origin: left center; }
+    .item { top: 56%; text-align: center; }
+    .item .dot { left: 0; top: 0; }
+    .item .year { position: absolute; bottom: calc(var(--u) * 3.5); left: 0; transform: translateX(-50%); white-space: nowrap; }
+    .item .text { position: absolute; top: calc(var(--u) * 3.5); left: 0; transform: translateX(-50%); }
+
+    /* portrait: vertical line on the left, text to the right */
+    .portrait .track, .portrait .fill { left: 16%; width: calc(var(--u) * 0.5); top: 24%; height: 68%; transform: translateX(-50%); }
+    .portrait .fill { transform-origin: center top; }
+    .portrait .item { left: 16%; text-align: left; }
+    .portrait .item .year, .portrait .item .text { position: absolute; left: calc(var(--u) * 5); transform: none; bottom: auto; }
+    .portrait .item .year { top: calc(var(--u) * -6); font-size: calc(var(--u) * 6.2); }
+    .portrait .item .text { top: calc(var(--u) * 0.6); width: calc(var(--u) * 70); font-size: calc(var(--u) * 4.4); }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="timeline" data-width="{{W}}" data-height="{{H}}" data-start="0" data-duration="{{DURATION}}">
+    <div class="title" id="title"></div>
+    <div class="stage" id="stage">
+      <div class="track"></div>
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="source"></div>
+    <script src="_shared/gsap.min.js"></script>
+    <script src="_shared/base.js"></script>
+    <script>
+      const { v } = M;
+      document.getElementById("title").innerHTML = M.rich(v.title);
+      const events = M.lines(v.events).slice(0, 7).map((l) => { const [year, ...rest] = M.cells(l); return { year, text: rest.join(" | ") }; });
+      const n = Math.max(1, events.length);
+      const stage = document.getElementById("stage");
+      const items = events.map((e, i) => {
+        const el = document.createElement("div");
+        el.className = "item" + (i === n - 1 ? " now" : "");
+        const pos = (i + 0.5) / n;
+        if (M.portrait) el.style.top = 24 + pos * 68 + "%";
+        else el.style.left = 8 + pos * 84 + "%";
+        el.innerHTML = `<div class="dot"></div><div class="year">${M.rich(e.year)}</div><div class="text">${M.rich(e.text)}</div>`;
+        if (!M.portrait) el.querySelector(".text").style.width = (M.W * 0.84) / n - M.W * 0.012 + "px";
+        stage.appendChild(el);
+        return { el, pos };
+      });
+
+      const tl = M.timeline();
+      const span = Math.min(M.dur * 0.55, 0.6 + n * 0.55);
+      const start = 0.5;
+      tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
+      tl.from(".track", { opacity: 0, duration: 0.4 }, 0.2);
+      tl.from("#fill", { [M.portrait ? "scaleY" : "scaleX"]: 0, duration: span, ease: "none" }, start);
+      for (const { el, pos } of items) {
+        const t = start + pos * span;
+        tl.from(el.querySelector(".dot"), { scale: 0, duration: 0.4, ease: "back.out(3)" }, t - 0.1);
+        tl.from(el.querySelectorAll(".year, .text"), { opacity: 0, y: M.portrait ? 0 : 16, x: M.portrait ? -16 : 0, duration: 0.45, ease: "power2.out", stagger: 0.08 }, t);
+      }
+      M.finish(tl);
+    </script>
+  </div>
+</body>
+</html>
