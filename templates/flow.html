@@ -1,0 +1,128 @@
+<!doctype html>
+<html data-composition-variables='[
+  {"id":"title","type":"string","label":"Rubrik","default":"How the edit comes together","hint":"Short headline, max 6 words"},
+  {"id":"from","type":"string","label":"Start","default":"Raw clip","hint":"The input, 1-3 words"},
+  {"id":"branches","type":"string","label":"Grenar, en per rad (2-4)","default":"Cuts\nSound\nAnimations","ui":"textarea","hint":"2-4 lines, the parallel parts or steps in between, 1-3 words each"},
+  {"id":"to","type":"string","label":"Slut","default":"Finished video","hint":"The result, 1-3 words"},
+  {"id":"source","type":"string","label":"Källa","default":""},
+  {"id":"duration","type":"number","label":"Längd (sekunder)","default":7},
+  {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
+  {"id":"accent2","type":"color","label":"Accent 2 (ljus)","default":"#22d3ee"}
+]'>
+<head>
+  <meta charset="utf-8">
+  <title>Flöde</title>
+  <meta name="description" content="A diagram where one input branches into 2-4 parts that join into one result, lighting up as it flows.">
+  <meta name="motion-use" content="The narration explains how something works as inputs, parallel parts and an output (a pipeline, how a tool or system is built, how a product is made).">
+  <link rel="stylesheet" href="_shared/base.css">
+  <style>
+    .stage { position: absolute; inset: 0; }
+    svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .wire { fill: none; stroke: #ffffff1c; stroke-width: calc(var(--u) * 0.32); }
+    .lit { fill: none; stroke: var(--accent2); stroke-width: calc(var(--u) * 0.42); stroke-linecap: round; filter: drop-shadow(0 0 calc(var(--u) * 0.8) var(--accent2)); }
+    .tip { fill: #fff; filter: drop-shadow(0 0 calc(var(--u) * 0.8) var(--accent2)); opacity: 0; }
+    .node {
+      position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
+      display: flex; align-items: center; gap: calc(var(--u) * 1.4);
+      padding: calc(var(--u) * 1.8) calc(var(--u) * 3.4); border-radius: 999px;
+      background: #17171fe6; border: 2px solid #ffffff22;
+      font-size: calc(var(--u) * 3.4); font-weight: 700;
+    }
+    .node .dot { width: calc(var(--u) * 1.1); height: calc(var(--u) * 1.1); border-radius: 50%; background: #ffffff55; position: relative; }
+    .node .dot i { position: absolute; inset: 0; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 calc(var(--u) * 1.2) var(--accent2); opacity: 0; }
+    .node .label { opacity: 0.5; }
+    .portrait .node { font-size: calc(var(--u) * 6.2); padding: calc(var(--u) * 2.6) calc(var(--u) * 5); }
+    .portrait .node .dot { width: calc(var(--u) * 1.6); height: calc(var(--u) * 1.6); }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="flow" data-width="{{W}}" data-height="{{H}}" data-start="0" data-duration="{{DURATION}}">
+    <div class="gridbg"></div>
+    <div class="title" id="title"></div>
+    <div class="stage" id="stage"><svg class="wires" id="wires"></svg></div>
+    <div class="source"></div>
+    <script src="_shared/gsap.min.js"></script>
+    <script src="_shared/base.js"></script>
+    <script>
+      const { v, W, H } = M;
+      const P = M.portrait;
+      document.getElementById("title").innerHTML = M.rich(v.title);
+      const stage = document.getElementById("stage");
+      const svg = document.getElementById("wires");
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      const NS = "http://www.w3.org/2000/svg";
+
+      const node = (label, x, y) => {
+        const el = document.createElement("div");
+        el.className = "node";
+        el.innerHTML = `<span class="dot"><i></i></span><span class="label">${M.esc(label)}</span><span class="lit-glow"></span>`;
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        stage.appendChild(el);
+        return { el, x, y, w: el.offsetWidth, h: el.offsetHeight };
+      };
+
+      // Landscape: left -> right in three columns. Portrait: input on top, branches stacked, result at the bottom.
+      const branches = M.lines(v.branches).slice(0, 4);
+      const n = Math.max(1, branches.length);
+      const cy = H * (P ? 0.6 : 0.58);
+      const from = P ? node(v.from, W / 2, H * 0.33) : node(v.from, W * 0.17, cy);
+      const to = P ? node(v.to, W / 2, H * 0.87) : node(v.to, W * 0.83, cy);
+      const spread = P ? Math.min(H * 0.11, (H * 0.34) / Math.max(1, n - 1)) : Math.min(H * 0.2, (H * 0.56) / Math.max(1, n - 1));
+      const mids = branches.map((b, i) => {
+        const off = (i - (n - 1) / 2) * spread;
+        return P ? node(b, W / 2, H * 0.6 + off) : node(b, W / 2, cy + off);
+      });
+
+      // Portrait wires run down the sides: into a branch from the left, out of it on the right.
+      const side = Math.max(...mids.map((m) => m.w), from.w, to.w) / 2 + W * 0.08;
+      /** S-curve from a's exit edge to b's entry edge. */
+      const curve = (a, b) => {
+        if (P && a === from) {
+          const x1 = a.x - a.w * 0.2, y1 = a.y + a.h / 2, xs = W / 2 - side, x2 = b.x - b.w / 2;
+          return `M ${x1} ${y1} C ${x1} ${y1 + H * 0.05}, ${xs} ${y1 + H * 0.03}, ${xs} ${(y1 + b.y) / 2} S ${xs} ${b.y}, ${x2} ${b.y}`;
+        }
+        if (P) {
+          const x1 = a.x + a.w / 2, xs = W / 2 + side, x2 = b.x + b.w * 0.2, y2 = b.y - b.h / 2;
+          return `M ${x1} ${a.y} C ${xs} ${a.y}, ${xs} ${a.y}, ${xs} ${(a.y + y2) / 2} S ${x2} ${y2 - H * 0.05}, ${x2} ${y2}`;
+        }
+        const x1 = a.x + a.w / 2, x2 = b.x - b.w / 2, mx = (x1 + x2) / 2;
+        return `M ${x1} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${x2} ${b.y}`;
+      };
+      const wire = (a, b) => {
+        const d = curve(a, b);
+        const make = (tag, cls) => { const e = document.createElementNS(NS, tag); e.setAttribute("class", cls); svg.appendChild(e); return e; };
+        make("path", "wire").setAttribute("d", d);
+        const lit = make("path", "lit");
+        lit.setAttribute("d", d);
+        const tip = make("circle", "tip");
+        tip.setAttribute("r", Math.min(W, H) * 0.008);
+        return { lit, tip };
+      };
+      const firstWires = mids.map((m) => wire(from, m));
+      const secondWires = mids.map((m) => wire(m, to));
+
+      const tl = M.timeline();
+      const light = (nd, t) => {
+        tl.to(nd.el.querySelector(".lit-glow"), { opacity: 1, duration: 0.35 }, t);
+        tl.to(nd.el.querySelector(".dot i"), { opacity: 1, duration: 0.25 }, t);
+        tl.to(nd.el.querySelector(".label"), { opacity: 1, duration: 0.3 }, t);
+      };
+      tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
+      tl.from(".node", { opacity: 0, scale: 0.9, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 0.15);
+      tl.from(".wire", { opacity: 0, duration: 0.5 }, 0.3);
+      const t1 = 0.8;
+      light(from, t1);
+      const draw = Math.min(0.8, M.dur * 0.12);
+      firstWires.forEach((w, i) => {
+        M.draw(tl, w.lit, t1 + 0.25 + i * 0.12, draw, w.tip);
+        light(mids[i], t1 + 0.25 + i * 0.12 + draw - 0.05);
+      });
+      const t2 = t1 + 0.25 + (n - 1) * 0.12 + draw + 0.35;
+      secondWires.forEach((w, i) => M.draw(tl, w.lit, t2 + i * 0.08, draw, w.tip));
+      light(to, t2 + (n - 1) * 0.08 + draw - 0.05);
+      M.finish(tl);
+    </script>
+  </div>
+</body>
+</html>

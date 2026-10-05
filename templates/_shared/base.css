@@ -44,4 +44,19 @@ html, body { background: #0b0b10; overflow: hidden; }
 
 .portrait .title { top: calc(var(--u) * 22); font-size: calc(var(--u) * 7); }
 
+/* Faint grid behind diagram templates (flow, steps). */
+.gridbg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px);
+  background-size: calc(var(--u) * 6) calc(var(--u) * 6);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 55%, #000 40%, transparent 100%);
+}
+
+/* Diagram nodes and cards: dim until lit (.glow fades in on top). */
+.lit-glow {
+  position: absolute; inset: -2px; border-radius: inherit; pointer-events: none; opacity: 0;
+  border: 2px solid var(--accent2);
+  box-shadow: 0 0 calc(var(--u) * 2.5) color-mix(in srgb, var(--accent2) 55%, transparent), inset 0 0 calc(var(--u) * 1.5) color-mix(in srgb, var(--accent2) 20%, transparent);
+}
+
 em, .hl { font-style: normal; color: var(--accent2); }

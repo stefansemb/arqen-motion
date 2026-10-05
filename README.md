@@ -29,6 +29,12 @@ The CLI prints the output path on stdout. Image fields (logos) accept a local fi
 | `timeline` | Up to 7 events (`year \| text`, one per line) |
 | `compare` | Two sides with logos and up to 5 rows (`label \| left \| right`); numeric rows get bars |
 | `ranking` | Up to 6 items (`name \| value`) as animated bars, biggest first |
+| `flow` | One input branching into 2-4 parts that join into a result, wires lighting up as it flows |
+| `steps` | 2-5 numbered cards with icons (`icon \| title \| subtitle`), lit one after another |
+| `checklist` | 2-5 key points ticked off with drawn check marks |
+| `ring` | A ring filling up to a percentage while the number counts up |
+
+Icons for `steps`: code, browser, bolt, video, mic, image, chart, spark, search, globe, file, chat, cloud, lock, user, gear, play, check, upload, money, cpu, rocket.
 
 Write `*word*` in any text to highlight it in the accent color.
 

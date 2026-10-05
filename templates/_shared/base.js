@@ -53,6 +53,26 @@
       const mult = { k: 1e3, m: 1e6, b: 1e9, t: 1e12 }[(m[2] || "").toLowerCase()] || 1;
       return parseFloat(m[1]) * mult;
     },
+    /**
+     * Draws an SVG path on the timeline from t over d seconds, with an optional dot riding its tip.
+     * Uses one proxy tween, so seeking to any frame gives the same picture.
+     */
+    draw(tl, path, t, d, dot) {
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      const place = (p) => {
+        path.style.strokeDashoffset = len * (1 - p);
+        if (dot) {
+          const pt = path.getPointAtLength(len * p);
+          dot.setAttribute("cx", pt.x);
+          dot.setAttribute("cy", pt.y);
+          dot.style.opacity = p > 0 ? 1 : 0;
+        }
+      };
+      place(0);
+      const o = { p: 0 };
+      tl.to(o, { p: 1, duration: d, ease: "power2.inOut", onUpdate: () => place(o.p) }, t);
+    },
     /** A paused timeline registered for the runtime. */
     timeline() {
       const tl = gsap.timeline({ paused: true });
