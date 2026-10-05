@@ -1,0 +1,76 @@
+<!doctype html>
+<html data-composition-variables='[
+  {"id":"title","type":"string","label":"Rubrik","default":"AI chatbot market share","hint":"Short headline, max 6 words"},
+  {"id":"items","type":"string","label":"Rader: namn | värde (max 6, sorteras störst först)","default":"ChatGPT | 61%\nGemini | 14%\nClaude | 9%\nCopilot | 7%\nPerplexity | 4%","ui":"textarea","hint":"3-6 lines \"name | value\" from the narration, values with units (e.g. 61%, $4B, 1.2M)"},
+  {"id":"source","type":"string","label":"Källa","default":""},
+  {"id":"duration","type":"number","label":"Längd (sekunder)","default":7},
+  {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
+  {"id":"accent2","type":"color","label":"Accent 2","default":"#22d3ee"}
+]'>
+<head>
+  <meta charset="utf-8">
+  <title>Topplista</title>
+  <meta name="description" content="A ranked list of up to 6 items with animated bars, biggest first.">
+  <meta name="motion-use" content="The narration ranks or lists several items with numbers (market share, benchmark scores, funding, users).">
+  <link rel="stylesheet" href="_shared/base.css">
+  <style>
+    .stage { position: absolute; left: 50%; top: 57%; transform: translate(-50%, -50%); width: min(84%, calc(var(--u) * 160)); display: grid; gap: calc(var(--u) * 3); }
+    .portrait .stage { width: 88%; gap: calc(var(--u) * 6); }
+    .row { display: grid; grid-template-columns: calc(var(--u) * 7) calc(var(--u) * 36) 1fr; align-items: center; gap: calc(var(--u) * 2); }
+    .portrait .row { grid-template-columns: calc(var(--u) * 11) 1fr; grid-template-areas: "rank name" "rank bar"; row-gap: calc(var(--u) * 1.2); }
+    .rank { font-size: calc(var(--u) * 5); font-weight: 900; color: var(--muted); text-align: right; }
+    .first .rank { color: var(--accent2); }
+    .name { font-size: calc(var(--u) * 4.8); font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .barline { display: flex; align-items: center; gap: calc(var(--u) * 1.6); }
+    .bar { height: calc(var(--u) * 4.4); border-radius: calc(var(--u) * 0.8); background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 70%, transparent), var(--accent)); transform-origin: left center; }
+    .first .bar { background: linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow: 0 0 calc(var(--u) * 3) color-mix(in srgb, var(--accent2) 45%, transparent); }
+    .val { font-size: calc(var(--u) * 4.8); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .portrait .rank { grid-area: rank; font-size: calc(var(--u) * 9); align-self: center; }
+    .portrait .name { grid-area: name; font-size: calc(var(--u) * 6.4); }
+    .portrait .bar { height: calc(var(--u) * 5); }
+    .portrait .barline { grid-area: bar; }
+    .portrait .val { font-size: calc(var(--u) * 6); }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="ranking" data-width="{{W}}" data-height="{{H}}" data-start="0" data-duration="{{DURATION}}">
+    <div class="title" id="title"></div>
+    <div class="stage" id="stage"></div>
+    <div class="source"></div>
+    <script src="_shared/gsap.min.js"></script>
+    <script src="_shared/base.js"></script>
+    <script>
+      const { v } = M;
+      document.getElementById("title").innerHTML = M.rich(v.title);
+      const items = M.lines(v.items)
+        .map((l) => { const [name, value = ""] = M.cells(l); return { name, value, n: M.num(value) ?? 0 }; })
+        .filter((it) => it.name)
+        .sort((a, b) => b.n - a.n)
+        .slice(0, 6);
+      const max = Math.max(...items.map((it) => it.n), 0) || 1;
+      const stage = document.getElementById("stage");
+      const rows = items.map((it, i) => {
+        const el = document.createElement("div");
+        el.className = "row" + (i === 0 ? " first" : "");
+        // Bars share the space left of the value; the biggest fills 82% of it.
+        el.innerHTML = `<div class="rank">${i + 1}</div><div class="name">${M.esc(it.name)}</div>` +
+          `<div class="barline"><div class="bar" style="width:${Math.max(3, (it.n / max) * 82)}%"></div><div class="val">${M.rich(it.value)}</div></div>`;
+        stage.appendChild(el);
+        return el;
+      });
+
+      const tl = M.timeline();
+      tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
+      const step = Math.min(0.35, (M.dur * 0.35) / Math.max(1, rows.length));
+      // Bottom of the list first, building up to number one.
+      [...rows].reverse().forEach((row, i) => {
+        const t = 0.5 + i * step;
+        tl.from(row, { opacity: 0, x: -40, duration: 0.45, ease: "power2.out" }, t);
+        tl.from(row.querySelector(".bar"), { scaleX: 0, duration: 0.8, ease: "power3.out" }, t + 0.1);
+        tl.from(row.querySelector(".val"), { opacity: 0, duration: 0.3 }, t + 0.6);
+      });
+      M.finish(tl);
+    </script>
+  </div>
+</body>
+</html>

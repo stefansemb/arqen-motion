@@ -7,7 +7,7 @@ import { listTemplates, readTemplate, render, saveAsset } from "./lib/motion.mjs
 
 const args = process.argv.slice(2);
 const usage = `Användning:
-  node motion.mjs list
+  node motion.mjs list [--json]
   node motion.mjs <mall> [värden.json] [--set nyckel=värde ...] [--portrait | --size BxH] [--no-outro] [-o ut.mp4]
 
   --size      egen storlek, t.ex. 1080x730 (jämna tal)
@@ -19,6 +19,12 @@ Exempel:
 
 if (!args.length || args[0] === "-h" || args[0] === "--help") {
   console.log(usage);
+  process.exit(0);
+}
+
+if (args[0] === "list" && args[1] === "--json") {
+  // For other apps (Arqen Studio): template ids, descriptions and fields, without the HTML.
+  console.log(JSON.stringify(listTemplates().map(({ html, ...t }) => t), null, 2));
   process.exit(0);
 }
 

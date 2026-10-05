@@ -28,9 +28,20 @@ The CLI prints the output path on stdout. Image fields (logos) accept a local fi
 | `quote` | A quote revealed word by word, with author and role |
 | `timeline` | Up to 7 events (`year \| text`, one per line) |
 | `compare` | Two sides with logos and up to 5 rows (`label \| left \| right`); numeric rows get bars |
+| `ranking` | Up to 6 items (`name \| value`) as animated bars, biggest first |
 
 Write `*word*` in any text to highlight it in the accent color.
 
 To add a template, drop an HTML file in `templates/`: declare its fields in `data-composition-variables`, use `{{W}}`, `{{H}}` and `{{DURATION}}` on the root element and build the timeline with the helpers in `templates/_shared/base.js`.
+
+### Templates for other apps
+
+`node motion.mjs list --json` prints every template's id, title, description and fields. Apps such as [Arqen Studio](https://github.com/stefansemb/arqen-studio) use it to offer new templates to their AI scene planner automatically. A template is offered when it has:
+
+- `<meta name="description" content="...">`: what it shows
+- `<meta name="motion-use" content="...">`: when to pick it
+- a `"hint"` on each field the planner should fill (fields without one keep their defaults)
+
+See `templates/ranking.html` for an example.
 
 Renders run with `DO_NOT_TRACK=1`, which turns off HyperFrames' anonymous telemetry.
