@@ -6,6 +6,7 @@
   {"id":"rightName","type":"string","label":"Höger namn","default":"GPT"},
   {"id":"rightLogo","type":"string","label":"Höger logga (bild, valfri)","default":"","ui":"image"},
   {"id":"rows","type":"string","label":"Rader: etikett | vänster | höger (max 5)","default":"Context window | 1M | 400K\nSWE-bench | 82% | 78%\nPrice / 1M tokens | $15 | $10","ui":"textarea"},
+  {"id":"cues","type":"string","label":"Tidpunkter per punkt (valfritt, sätts av Studio)","default":""},
   {"id":"source","type":"string","label":"Källa","default":""},
   {"id":"duration","type":"number","label":"Längd (sekunder)","default":8},
   {"id":"accent","type":"color","label":"Accent (vänster)","default":"#8b5cf6"},
@@ -104,8 +105,9 @@
       tl.from("#right", { opacity: 0, x: 80, duration: 0.7, ease: "power3.out" }, 0.2);
       tl.from("#vs", { opacity: 0, scale: 0.3, duration: 0.5, ease: "back.out(2.5)" }, 0.5);
       const step = Math.min(0.5, (M.dur * 0.4) / Math.max(1, rows.length));
+      const cues = M.cues(rows.length);
       rows.forEach((row, i) => {
-        const t = 0.9 + i * step;
+        const t = cues ? Math.max(0.9, cues[i] - 0.2) : 0.9 + i * step;
         tl.from(row, { opacity: 0, y: 20, duration: 0.45, ease: "power2.out" }, t);
         const bars = row.querySelectorAll(".bar");
         if (bars.length) tl.from(bars, { scaleX: 0, duration: 0.8, ease: "power3.out" }, t + 0.15);

@@ -38,6 +38,8 @@ Icons for `steps`: code, browser, bolt, video, mic, image, chart, spark, search,
 
 Write `*word*` in any text to highlight it in the accent color.
 
+`checklist`, `steps`, `flow`, `timeline` and `compare` take an optional `cues` field: comma-separated seconds at which each item appears (for `flow`: the input, each branch, then the result). Arqen Studio fills it from the narration, so items light up as they are named. Without it, items appear at a steady pace.
+
 To add a template, drop an HTML file in `templates/`: declare its fields in `data-composition-variables`, use `{{W}}`, `{{H}}` and `{{DURATION}}` on the root element and build the timeline with the helpers in `templates/_shared/base.js`.
 
 ### Templates for other apps

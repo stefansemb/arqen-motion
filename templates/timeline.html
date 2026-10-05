@@ -2,6 +2,7 @@
 <html data-composition-variables='[
   {"id":"title","type":"string","label":"Rubrik","default":"The road to GPT-5"},
   {"id":"events","type":"string","label":"Händelser, en per rad: år | text (max 7)","default":"2017 | Transformer paper\n2018 | GPT-1\n2020 | GPT-3\n2022 | ChatGPT launches\n2023 | GPT-4\n2025 | GPT-5","ui":"textarea"},
+  {"id":"cues","type":"string","label":"Tidpunkter per punkt (valfritt, sätts av Studio)","default":""},
   {"id":"source","type":"string","label":"Källa","default":""},
   {"id":"duration","type":"number","label":"Längd (sekunder)","default":8},
   {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
@@ -77,9 +78,23 @@
       const start = 0.5;
       tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
       tl.from(".track", { opacity: 0, duration: 0.4 }, 0.2);
-      tl.from("#fill", { [M.portrait ? "scaleY" : "scaleX"]: 0, duration: span, ease: "none" }, start);
-      for (const { el, pos } of items) {
-        const t = start + pos * span;
+      // With cues, the line reaches each event as the narration names it.
+      const cues = M.cues(items.length);
+      const axis = M.portrait ? "scaleY" : "scaleX";
+      const at = (i) => (cues ? Math.max(start + 0.1, cues[i]) : start + items[i].pos * span);
+      if (cues) {
+        tl.set("#fill", { [axis]: 0 }, 0);
+        let prevT = start;
+        items.forEach(({ pos }, i) => {
+          tl.to("#fill", { [axis]: pos, duration: Math.max(0.1, at(i) - prevT), ease: "power1.inOut" }, prevT);
+          prevT = at(i);
+        });
+        tl.to("#fill", { [axis]: 1, duration: 0.6, ease: "power1.out" }, prevT);
+      } else {
+        tl.from("#fill", { [axis]: 0, duration: span, ease: "none" }, start);
+      }
+      for (const [i, { el }] of items.entries()) {
+        const t = at(i);
         tl.from(el.querySelector(".dot"), { scale: 0, duration: 0.4, ease: "back.out(3)" }, t - 0.1);
         tl.from(el.querySelectorAll(".year, .text"), { opacity: 0, y: M.portrait ? 0 : 16, x: M.portrait ? -16 : 0, duration: 0.45, ease: "power2.out", stagger: 0.08 }, t);
       }

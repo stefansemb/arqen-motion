@@ -4,6 +4,7 @@
   {"id":"from","type":"string","label":"Start","default":"Raw clip","hint":"The input, 1-3 words"},
   {"id":"branches","type":"string","label":"Grenar, en per rad (2-4)","default":"Cuts\nSound\nAnimations","ui":"textarea","hint":"2-4 lines, the parallel parts or steps in between, 1-3 words each"},
   {"id":"to","type":"string","label":"Slut","default":"Finished video","hint":"The result, 1-3 words"},
+  {"id":"cues","type":"string","label":"Tidpunkter per punkt (valfritt, sätts av Studio)","default":""},
   {"id":"source","type":"string","label":"Källa","default":""},
   {"id":"duration","type":"number","label":"Längd (sekunder)","default":7},
   {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
@@ -111,16 +112,21 @@
       tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
       tl.from(".node", { opacity: 0, scale: 0.9, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 0.15);
       tl.from(".wire", { opacity: 0, duration: 0.5 }, 0.3);
-      const t1 = 0.8;
-      light(from, t1);
       const draw = Math.min(0.8, M.dur * 0.12);
+      // Cues (input, each branch, result) light each node as the narration names it; otherwise a steady flow.
+      const cues = M.cues(n + 2);
+      const t1 = cues ? Math.max(0.6, cues[0]) : 0.8;
+      light(from, t1);
+      let lastMid = t1;
       firstWires.forEach((w, i) => {
-        M.draw(tl, w.lit, t1 + 0.25 + i * 0.12, draw, w.tip);
-        light(mids[i], t1 + 0.25 + i * 0.12 + draw - 0.05);
+        const end = cues ? Math.max(t1 + 0.3, cues[i + 1]) : t1 + 0.25 + i * 0.12 + draw;
+        M.draw(tl, w.lit, Math.max(t1 + 0.1, end - draw), Math.min(draw, end - t1 - 0.1), w.tip);
+        light(mids[i], end - 0.05);
+        lastMid = Math.max(lastMid, end);
       });
-      const t2 = t1 + 0.25 + (n - 1) * 0.12 + draw + 0.35;
-      secondWires.forEach((w, i) => M.draw(tl, w.lit, t2 + i * 0.08, draw, w.tip));
-      light(to, t2 + (n - 1) * 0.08 + draw - 0.05);
+      const tEnd = cues ? Math.max(lastMid + 0.4, cues[n + 1]) : lastMid + 0.35 + draw + (n - 1) * 0.08;
+      secondWires.forEach((w, i) => M.draw(tl, w.lit, Math.max(lastMid + 0.1, tEnd - draw - (n - 1 - i) * 0.08), Math.min(draw, tEnd - lastMid - 0.1), w.tip));
+      light(to, tEnd - 0.05);
       M.finish(tl);
     </script>
   </div>

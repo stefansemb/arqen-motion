@@ -2,6 +2,7 @@
 <html data-composition-variables='[
   {"id":"title","type":"string","label":"Rubrik","default":"What you need to know","hint":"Short headline, max 6 words"},
   {"id":"points","type":"string","label":"Punkter, en per rad (2-5, *ord* = markerat)","default":"Runs *locally* on your machine\nNo per-render fees\nWorks with any coding agent\nOpen source under Apache 2.0","ui":"textarea","hint":"2-5 short key points from the narration, one per line, max 7 words each"},
+  {"id":"cues","type":"string","label":"Tidpunkter per punkt (valfritt, sätts av Studio)","default":""},
   {"id":"source","type":"string","label":"Källa","default":""},
   {"id":"duration","type":"number","label":"Längd (sekunder)","default":7},
   {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
@@ -52,8 +53,10 @@
       const tl = M.timeline();
       tl.from("#title", { opacity: 0, y: -30, duration: 0.6, ease: "power2.out" }, 0);
       const step = Math.min(0.9, (M.dur * 0.6) / Math.max(1, rows.length));
+      // With cues, each check mark lands as the narration names the point.
+      const cues = M.cues(rows.length);
       rows.forEach((row, i) => {
-        const t = 0.5 + i * step;
+        const t = cues ? Math.max(0.2, cues[i] - 0.4) : 0.5 + i * step;
         tl.from(row, { opacity: 0, x: -40, duration: 0.45, ease: "power2.out" }, t);
         tl.from(row.querySelector(".fill"), { opacity: 0, scale: 0.4, duration: 0.35, ease: "back.out(2)" }, t + 0.25);
         M.draw(tl, row.querySelector("path"), t + 0.35, 0.35);

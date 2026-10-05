@@ -73,6 +73,14 @@
       const o = { p: 0 };
       tl.to(o, { p: 1, duration: d, ease: "power2.inOut", onUpdate: () => place(o.p) }, t);
     },
+    /**
+     * Times (seconds) at which each of n items should appear, from the optional "cues" variable
+     * ("1.2,2.5,4"), e.g. when the narration names them; null when absent or the count differs.
+     */
+    cues(n) {
+      const c = String(v.cues || "").split(",").map((x) => parseFloat(x)).filter((x) => Number.isFinite(x));
+      return c.length === n && n > 0 ? c : null;
+    },
     /** A paused timeline registered for the runtime. */
     timeline() {
       const tl = gsap.timeline({ paused: true });
