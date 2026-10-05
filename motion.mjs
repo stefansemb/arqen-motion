@@ -8,8 +8,9 @@ import { listTemplates, readTemplate, render, saveAsset } from "./lib/motion.mjs
 const args = process.argv.slice(2);
 const usage = `Användning:
   node motion.mjs list
-  node motion.mjs <mall> [värden.json] [--set nyckel=värde ...] [--portrait] [--no-outro] [-o ut.mp4]
+  node motion.mjs <mall> [värden.json] [--set nyckel=värde ...] [--portrait | --size BxH] [--no-outro] [-o ut.mp4]
 
+  --size      egen storlek, t.ex. 1080x730 (jämna tal)
   --no-outro  håller sista bilden i stället för att tona ut (när klippet klipps in i en video)
 
 Exempel:
@@ -38,6 +39,7 @@ for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === "--portrait") format = "portrait";
   else if (a === "--no-outro") outro = false;
+  else if (a === "--size") format = args[++i];
   else if (a === "-o" || a === "--out") out = args[++i];
   else if (a === "--set") {
     const [k, ...rest] = args[++i].split("=");

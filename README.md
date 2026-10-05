@@ -15,6 +15,7 @@ npm start                 # web UI at http://localhost:4320
 node motion.mjs list                                   # templates and their fields
 node motion.mjs number --set value=40 --set suffix=B --set "label=raised in its latest round"
 node motion.mjs compare values.json --portrait -o out.mp4
+node motion.mjs timeline values.json --size 1080x730 --no-outro   # custom size, hold the last frame
 ```
 
 The CLI prints the output path on stdout. Image fields (logos) accept a local file path.
