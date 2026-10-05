@@ -1,7 +1,7 @@
 <!doctype html>
 <html data-composition-variables='[
   {"id":"title","type":"string","label":"Rubrik","default":"AI chatbot market share","hint":"Short headline, max 6 words"},
-  {"id":"items","type":"string","label":"Rader: namn | värde (max 6, sorteras störst först)","default":"ChatGPT | 61%\nGemini | 14%\nClaude | 9%\nCopilot | 7%\nPerplexity | 4%","ui":"textarea","hint":"3-6 lines \"name | value\" from the narration, values with units (e.g. 61%, $4B, 1.2M)"},
+  {"id":"items","type":"string","label":"Rader: namn | värde (max 6, sorteras störst först)","default":"ChatGPT | 61%\nGemini | 14%\nClaude | 9%\nCopilot | 7%\nPerplexity | 4%","ui":"textarea","hint":"3-6 lines \"name | value\" from the narration, all measured the same way (one benchmark, one kind of number), values with units (e.g. 61%, $4B, 1.2M); names max 2 words"},
   {"id":"source","type":"string","label":"Källa","default":""},
   {"id":"duration","type":"number","label":"Längd (sekunder)","default":7},
   {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
@@ -11,7 +11,7 @@
   <meta charset="utf-8">
   <title>Topplista</title>
   <meta name="description" content="A ranked list of up to 6 items with animated bars, biggest first.">
-  <meta name="motion-use" content="The narration ranks or lists several items with numbers (market share, benchmark scores, funding, users).">
+  <meta name="motion-use" content="The narration ranks three or more items on one single measure (market share, one benchmark's scores, funding, users). Never mix different measures in one list; two items are a comparison, not a ranking.">
   <link rel="stylesheet" href="_shared/base.css">
   <style>
     .stage { position: absolute; left: 50%; top: 57%; transform: translate(-50%, -50%); width: min(84%, calc(var(--u) * 160)); display: grid; gap: calc(var(--u) * 3); }
