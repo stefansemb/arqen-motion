@@ -12,7 +12,7 @@ Animerade grafikklipp till videor, som räknande siffror, citatkort, tidslinjer 
 ## Läge: version 1.0.2 (släppt 2026-10-06)
 Nio mallar: `number`, `quote`, `timeline`, `compare`, `ranking`, `flow`, `steps`, `checklist` och `ring`. Detaljer finns i README.
 
-Versioner, alla från 2026-10-05:
+Versioner (0.x från 2026-10-05):
 - **0.2.0:** `--size` för eget format.
 - **0.3.0:** mallen `ranking` och `list --json` för andra appar.
 - **0.4.0:** mallarna `flow`, `steps`, `checklist` och `ring`.
@@ -36,7 +36,15 @@ Versioner, alla från 2026-10-05:
 ## Att tänka på
 - Allt som användaren ser är på engelska sedan 2026-10-06: mallnamn, fält, webb-UI, CLI-hjälp och felmeddelanden. Håll det så, eftersom repot är publikt.
 - Inga automatiska tester. Provrendera en mall i både 16:9 och 9:16 efter ändringar.
+- Webb-UI:t och mallarna läses från disk vid varje anrop, så ändringar där syns efter en omladdning av sidan. Ändringar i `server.mjs` eller `lib/` kräver att servern på port 4320 startas om.
 - Tagga releaser som `vX.Y.Z`. Taggarna syns som releaser i XP-systemet.
+
+## Så görs en release
+1. Höj versionen i `package.json` och i båda `arqen-motion`-posterna i `package-lock.json`.
+2. Lägg till en rad under Versioner här ovan.
+3. Committa, tagga med `git tag -a vX.Y.Z -m "Arqen Motion X.Y.Z"` och pusha både commit och tagg.
+4. Skapa releasen med `gh release create vX.Y.Z --title vX.Y.Z --notes-file <fil> --latest`. Notes är på engelska, med "Changed"/"Fixed" och en länk till full changelog, som i tidigare releaser.
+5. Patch (X.Y.**Z**) för texter och UI, minor (X.**Y**.0) för nya mallar eller fält, och major för ändrade mall-id, fält eller flaggor (Studio bygger på dem).
 
 ## Nästa steg
 - Automatiska tester, till exempel en snabb rendering av varje mall.
