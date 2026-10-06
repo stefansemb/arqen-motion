@@ -9,7 +9,7 @@ Animerade grafikklipp till videor, som räknande siffror, citatkort, tidslinjer 
 - Klippen hamnar i `renders/`, som är gitignorerad. `assets/` är också gitignorerad.
 - Licens Apache 2.0. Repot `stefansemb/arqen-motion` är publikt.
 
-## Läge: version 0.5.1
+## Läge: version 1.0.0 (släppt 2026-10-06)
 Nio mallar: `number`, `quote`, `timeline`, `compare`, `ranking`, `flow`, `steps`, `checklist` och `ring`. Detaljer finns i README.
 
 Versioner, alla från 2026-10-05:
@@ -18,6 +18,7 @@ Versioner, alla från 2026-10-05:
 - **0.4.0:** mallarna `flow`, `steps`, `checklist` och `ring`.
 - **0.5.0:** fältet `cues` (sekunder) som tajmar när varje punkt visas mot berättarrösten.
 - **0.5.1:** topplistor håller sig till ett mått.
+- **1.0.0 (2026-10-06):** första stabila versionen, med samma funktioner som 0.5.1. Inför releasen provrenderades `number` (1920x1080) och `checklist` (1080x1920). Mallnamn, fält och CLI-flaggor räknas nu som stabila: ändra dem inte utan en ny huvudversion, eftersom Studio är beroende av dem.
 
 ## Koppling till Arqen AI Studio
 - Studio hittar Motion via `MOTION_DIR` eller syskonmappen "Arqen Motion". Studio läser `node motion.mjs list --json` och erbjuder sin scenplanerare varje mall som har `motion-use` och fält med `hint`.
@@ -27,7 +28,7 @@ Versioner, alla från 2026-10-05:
 
 ## Synlighet och XP (2026-10-06)
 - Motion har ett eget kort på samidatools.com, "Open source", med länkar till GitHub och YouTube-kanalen.
-- I Arqen Mission Controls projektlista står Motion på 83 %. Nästa delmål är **Release 1.0**.
+- I Arqen Mission Controls projektlista står Motion på 100 % efter Release 1.0.
 - Arqen AI Studios XP-system räknar commits (10, "Add ..." ger 30), versionstaggar (150) och klipp i `renders/` (5 per klipp).
 
 ## Att tänka på
@@ -35,4 +36,6 @@ Versioner, alla från 2026-10-05:
 - Tagga releaser som `vX.Y.Z`. Taggarna syns som releaser i XP-systemet.
 
 ## Nästa steg
-- Release 1.0: bestäm vad som saknas, till exempel tester, fler mallar eller ett bättre webb-UI.
+- Fältnamnen i webb-UI:t och i `list` är på svenska ("Rubrik", "Punkter"), medan README är på engelska. Översätt dem för publika användare.
+- Automatiska tester, till exempel en snabb rendering av varje mall.
+- Fler mallar efter behov i videorna.
