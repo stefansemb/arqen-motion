@@ -9,7 +9,7 @@ Animerade grafikklipp till videor, som räknande siffror, citatkort, tidslinjer 
 - Klippen hamnar i `renders/`, som är gitignorerad. `assets/` är också gitignorerad.
 - Licens Apache 2.0. Repot `stefansemb/arqen-motion` är publikt.
 
-## Läge: version 1.0.1 (släppt 2026-10-06)
+## Läge: version 1.0.2 (släppt 2026-10-06)
 Nio mallar: `number`, `quote`, `timeline`, `compare`, `ranking`, `flow`, `steps`, `checklist` och `ring`. Detaljer finns i README.
 
 Versioner, alla från 2026-10-05:
@@ -20,6 +20,7 @@ Versioner, alla från 2026-10-05:
 - **0.5.1:** topplistor håller sig till ett mått.
 - **1.0.0 (2026-10-06):** första stabila versionen, med samma funktioner som 0.5.1. Inför releasen provrenderades `number` (1920x1080) och `checklist` (1080x1920). Mallnamn, fält och CLI-flaggor räknas nu som stabila: ändra dem inte utan en ny huvudversion, eftersom Studio är beroende av dem.
 - **1.0.1 (2026-10-06):** allt användaren ser är översatt till engelska (mallnamn, fältetiketter, webb-UI, CLI och felmeddelanden). Fält-id:n är oförändrade.
+- **1.0.2 (2026-10-06):** webb-UI:t visar bara de 8 senaste renderingarna (äldre ligger kvar i `renders/`), och alla förhandsvisningar har samma ruta i 16:9.
 
 ## Koppling till Arqen AI Studio
 - Studio hittar Motion via `MOTION_DIR` eller syskonmappen "Arqen Motion". Studio läser `node motion.mjs list --json` och erbjuder sin scenplanerare varje mall som har `motion-use` och fält med `hint`.

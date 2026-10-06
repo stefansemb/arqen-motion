@@ -1,6 +1,6 @@
 {
   "name": "arqen-motion",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Animated numbers, quote cards, timelines and comparisons rendered to MP4 with HyperFrames",
   "type": "module",

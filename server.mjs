@@ -92,11 +92,12 @@ const server = http.createServer(async (req, res) => {
       const job = jobs.get(p.slice(10));
       return job ? send(res, 200, job) : send(res, 404, { error: "Unknown job" });
     }
+    // The 8 newest renders; older ones stay in renders/ but don't clutter the page.
     if (p === "/api/renders") {
       fs.mkdirSync(RENDERS, { recursive: true });
       const files = fs.readdirSync(RENDERS).filter((f) => f.endsWith(".mp4"))
         .map((f) => ({ file: f, mtime: fs.statSync(path.join(RENDERS, f)).mtimeMs }))
-        .sort((a, b) => b.mtime - a.mtime).slice(0, 24);
+        .sort((a, b) => b.mtime - a.mtime).slice(0, 8);
       return send(res, 200, files);
     }
     send(res, 404, "Not found");
