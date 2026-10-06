@@ -6,16 +6,16 @@ import fs from "node:fs";
 import { listTemplates, readTemplate, render, saveAsset } from "./lib/motion.mjs";
 
 const args = process.argv.slice(2);
-const usage = `Användning:
+const usage = `Usage:
   node motion.mjs list [--json]
-  node motion.mjs <mall> [värden.json] [--set nyckel=värde ...] [--portrait | --size BxH] [--no-outro] [-o ut.mp4]
+  node motion.mjs <template> [values.json] [--set key=value ...] [--portrait | --size WxH] [--no-outro] [-o out.mp4]
 
-  --size      egen storlek, t.ex. 1080x730 (jämna tal)
-  --no-outro  håller sista bilden i stället för att tona ut (när klippet klipps in i en video)
+  --size      custom size, e.g. 1080x730 (even numbers)
+  --no-outro  holds the last frame instead of fading out (when the clip is cut into a video)
 
-Exempel:
+Examples:
   node motion.mjs number --set value=40 --set prefix=$ --set suffix=B --set "label=raised in funding"
-  node motion.mjs compare compare.json --portrait -o renders/jamforelse.mp4`;
+  node motion.mjs compare compare.json --portrait -o renders/comparison.mp4`;
 
 if (!args.length || args[0] === "-h" || args[0] === "--help") {
   console.log(usage);
@@ -51,7 +51,7 @@ for (let i = 0; i < args.length; i++) {
     const [k, ...rest] = args[++i].split("=");
     values[k] = rest.join("=").replace(/\\n/g, "\n");
   } else if (a.endsWith(".json")) values = { ...values, ...JSON.parse(fs.readFileSync(a, "utf8")) };
-  else { console.error(`Okänt argument: ${a}\n\n${usage}`); process.exit(1); }
+  else { console.error(`Unknown argument: ${a}\n\n${usage}`); process.exit(1); }
 }
 
 // image variables may be given as local file paths; copy them into assets/
@@ -63,7 +63,7 @@ for (const d of readTemplate(template).variables) {
 const start = Date.now();
 try {
   const file = await render({ template, values, format, outro, out, onLog: process.env.MOTION_VERBOSE ? (l) => console.error(l) : undefined });
-  console.error(`Klar på ${((Date.now() - start) / 1000).toFixed(1)} s`);
+  console.error(`Done in ${((Date.now() - start) / 1000).toFixed(1)} s`);
   console.log(file);
 } catch (e) {
   console.error(e.message);

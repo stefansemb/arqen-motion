@@ -42,7 +42,7 @@ function previewHtml(id, values, format) {
 }
 
 function sendFile(res, file) {
-  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return send(res, 404, "Hittades inte");
+  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return send(res, 404, "Not found");
   res.writeHead(200, { "content-type": TYPES[path.extname(file).toLowerCase()] || "application/octet-stream", "cache-control": "no-store" });
   fs.createReadStream(file).pipe(res);
 }
@@ -90,7 +90,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (p.startsWith("/api/jobs/")) {
       const job = jobs.get(p.slice(10));
-      return job ? send(res, 200, job) : send(res, 404, { error: "Okänt jobb" });
+      return job ? send(res, 200, job) : send(res, 404, { error: "Unknown job" });
     }
     if (p === "/api/renders") {
       fs.mkdirSync(RENDERS, { recursive: true });
@@ -99,7 +99,7 @@ const server = http.createServer(async (req, res) => {
         .sort((a, b) => b.mtime - a.mtime).slice(0, 24);
       return send(res, 200, files);
     }
-    send(res, 404, "Hittades inte");
+    send(res, 404, "Not found");
   } catch (e) {
     send(res, 400, { error: e.message });
   }

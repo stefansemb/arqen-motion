@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,7 +51,7 @@
 </style>
 </head>
 <body>
-<header><div class="logo">A</div><h1>Arqen Motion</h1><span>Grafikklipp till videor, renderade med HyperFrames</span></header>
+<header><div class="logo">A</div><h1>Arqen Motion</h1><span>Graphics clips for videos, rendered with HyperFrames</span></header>
 <main>
   <section class="panel">
     <div class="tabs" id="tabs"></div>
@@ -60,14 +60,14 @@
       <button data-f="landscape" class="on">16:9 Video</button>
       <button data-f="portrait">9:16 Short</button>
     </div>
-    <button class="go" id="go">Rendera MP4</button>
+    <button class="go" id="go">Render MP4</button>
     <div class="status" id="status"></div>
   </section>
   <section>
     <div class="stagebox"><div class="stage" id="stage"><iframe id="frame"></iframe></div></div>
     <div class="progress"><div id="bar"></div></div>
-    <div class="hint">Förhandsvisningen loopar i webbläsaren. MP4:an renderas i headless Chrome och ser likadan ut. Skriv *ord* för att markera ord i accentfärgen.</div>
-    <h2>Senaste renderingar</h2>
+    <div class="hint">The preview loops in the browser. The MP4 is rendered in headless Chrome and looks the same. Write *word* to highlight a word in the accent color.</div>
+    <h2>Latest renders</h2>
     <div class="renders" id="renders"></div>
   </section>
 </main>
@@ -102,7 +102,7 @@ function pick(id) {
     const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
     if (d.type === "color") return "";
     if (d.ui === "textarea") return `<label>${d.label}</label><textarea name="${d.id}">${esc(val)}</textarea>`;
-    if (d.ui === "image") return `<label>${d.label}</label><div class="img">${val ? `<img src="/t/${esc(val)}"><button type="button" data-clear="${d.id}">Ta bort</button>` : ""}<input type="file" accept="image/*" data-img="${d.id}"></div>`;
+    if (d.ui === "image") return `<label>${d.label}</label><div class="img">${val ? `<img src="/t/${esc(val)}"><button type="button" data-clear="${d.id}">Remove</button>` : ""}<input type="file" accept="image/*" data-img="${d.id}"></div>`;
     return `<label>${d.label}</label><input type="${d.type === "number" ? "number" : "text"}" step="any" name="${d.id}" value="${esc(val)}">`;
   };
   const colors = current.variables.filter((d) => d.type === "color");
@@ -136,16 +136,16 @@ function layout() {
 
 async function renderNow() {
   const status = $("#status");
-  $("#go").disabled = true; status.className = "status"; status.textContent = "Startar…";
+  $("#go").disabled = true; status.className = "status"; status.textContent = "Starting…";
   const r = await fetch("/api/render", { method: "POST", body: JSON.stringify({ template: current.id, format, values: values[current.id] || {} }) });
   const job = await r.json();
   if (job.error) { status.className = "status err"; status.textContent = job.error; $("#go").disabled = false; return; }
   const t0 = Date.now();
   const poll = async () => {
     const j = await (await fetch("/api/jobs/" + job.id)).json();
-    if (j.status === "done") { status.textContent = `Klar på ${j.seconds} s: ${j.file}`; $("#go").disabled = false; loadRenders(); return; }
+    if (j.status === "done") { status.textContent = `Done in ${j.seconds} s: ${j.file}`; $("#go").disabled = false; loadRenders(); return; }
     if (j.status === "error") { status.className = "status err"; status.textContent = j.error; $("#go").disabled = false; return; }
-    status.textContent = `${j.status === "queued" ? "I kö" : "Renderar"}… ${Math.round((Date.now() - t0) / 1000)} s`;
+    status.textContent = `${j.status === "queued" ? "Queued" : "Rendering"}… ${Math.round((Date.now() - t0) / 1000)} s`;
     setTimeout(poll, 1000);
   };
   poll();
@@ -154,8 +154,8 @@ async function renderNow() {
 async function loadRenders() {
   const files = await (await fetch("/api/renders")).json();
   $("#renders").innerHTML = files.length ? files.map((f) =>
-    `<figure><video src="/renders/${encodeURIComponent(f.file)}" controls muted preload="metadata"></video><figcaption><span title="${f.file}">${f.file}</span><a href="/renders/${encodeURIComponent(f.file)}" download>Ladda ner</a></figcaption></figure>`).join("")
-    : `<div class="hint">Inga renderingar än.</div>`;
+    `<figure><video src="/renders/${encodeURIComponent(f.file)}" controls muted preload="metadata"></video><figcaption><span title="${f.file}">${f.file}</span><a href="/renders/${encodeURIComponent(f.file)}" download>Download</a></figcaption></figure>`).join("")
+    : `<div class="hint">No renders yet.</div>`;
 }
 
 init();

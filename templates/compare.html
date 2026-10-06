@@ -1,20 +1,20 @@
 <!doctype html>
 <html data-composition-variables='[
-  {"id":"title","type":"string","label":"Rubrik","default":"Claude Opus 5.5 vs GPT-6"},
-  {"id":"leftName","type":"string","label":"Vänster namn","default":"Claude"},
-  {"id":"leftLogo","type":"string","label":"Vänster logga (bild, valfri)","default":"","ui":"image"},
-  {"id":"rightName","type":"string","label":"Höger namn","default":"GPT"},
-  {"id":"rightLogo","type":"string","label":"Höger logga (bild, valfri)","default":"","ui":"image"},
-  {"id":"rows","type":"string","label":"Rader: etikett | vänster | höger (max 5)","default":"Context window | 1M | 400K\nSWE-bench | 82% | 78%\nPrice / 1M tokens | $15 | $10","ui":"textarea"},
-  {"id":"cues","type":"string","label":"Tidpunkter per punkt (valfritt, sätts av Studio)","default":""},
-  {"id":"source","type":"string","label":"Källa","default":""},
-  {"id":"duration","type":"number","label":"Längd (sekunder)","default":8},
-  {"id":"accent","type":"color","label":"Accent (vänster)","default":"#8b5cf6"},
-  {"id":"accent2","type":"color","label":"Accent 2 (höger)","default":"#22d3ee"}
+  {"id":"title","type":"string","label":"Title","default":"Claude Opus 5.5 vs GPT-6"},
+  {"id":"leftName","type":"string","label":"Left name","default":"Claude"},
+  {"id":"leftLogo","type":"string","label":"Left logo (image, optional)","default":"","ui":"image"},
+  {"id":"rightName","type":"string","label":"Right name","default":"GPT"},
+  {"id":"rightLogo","type":"string","label":"Right logo (image, optional)","default":"","ui":"image"},
+  {"id":"rows","type":"string","label":"Rows: label | left | right (max 5)","default":"Context window | 1M | 400K\nSWE-bench | 82% | 78%\nPrice / 1M tokens | $15 | $10","ui":"textarea"},
+  {"id":"cues","type":"string","label":"Time per item in seconds (optional, set by Studio)","default":""},
+  {"id":"source","type":"string","label":"Source","default":""},
+  {"id":"duration","type":"number","label":"Duration (seconds)","default":8},
+  {"id":"accent","type":"color","label":"Accent (left)","default":"#8b5cf6"},
+  {"id":"accent2","type":"color","label":"Accent 2 (right)","default":"#22d3ee"}
 ]'>
 <head>
   <meta charset="utf-8">
-  <title>Jämförelse</title>
+  <title>Comparison</title>
   <meta name="description" content="Two sides with up to 5 rows of values; numeric rows get bars.">
   <meta name="motion-use" content="The narration contrasts two products, models or companies on concrete points.">
   <link rel="stylesheet" href="_shared/base.css">

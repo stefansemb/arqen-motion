@@ -9,7 +9,7 @@ Animerade grafikklipp till videor, som räknande siffror, citatkort, tidslinjer 
 - Klippen hamnar i `renders/`, som är gitignorerad. `assets/` är också gitignorerad.
 - Licens Apache 2.0. Repot `stefansemb/arqen-motion` är publikt.
 
-## Läge: version 1.0.0 (släppt 2026-10-06)
+## Läge: version 1.0.1 (släppt 2026-10-06)
 Nio mallar: `number`, `quote`, `timeline`, `compare`, `ranking`, `flow`, `steps`, `checklist` och `ring`. Detaljer finns i README.
 
 Versioner, alla från 2026-10-05:
@@ -19,6 +19,7 @@ Versioner, alla från 2026-10-05:
 - **0.5.0:** fältet `cues` (sekunder) som tajmar när varje punkt visas mot berättarrösten.
 - **0.5.1:** topplistor håller sig till ett mått.
 - **1.0.0 (2026-10-06):** första stabila versionen, med samma funktioner som 0.5.1. Inför releasen provrenderades `number` (1920x1080) och `checklist` (1080x1920). Mallnamn, fält och CLI-flaggor räknas nu som stabila: ändra dem inte utan en ny huvudversion, eftersom Studio är beroende av dem.
+- **1.0.1 (2026-10-06):** allt användaren ser är översatt till engelska (mallnamn, fältetiketter, webb-UI, CLI och felmeddelanden). Fält-id:n är oförändrade.
 
 ## Koppling till Arqen AI Studio
 - Studio hittar Motion via `MOTION_DIR` eller syskonmappen "Arqen Motion". Studio läser `node motion.mjs list --json` och erbjuder sin scenplanerare varje mall som har `motion-use` och fält med `hint`.
@@ -32,10 +33,10 @@ Versioner, alla från 2026-10-05:
 - Arqen AI Studios XP-system räknar commits (10, "Add ..." ger 30), versionstaggar (150) och klipp i `renders/` (5 per klipp).
 
 ## Att tänka på
+- Allt som användaren ser är på engelska sedan 2026-10-06: mallnamn, fält, webb-UI, CLI-hjälp och felmeddelanden. Håll det så, eftersom repot är publikt.
 - Inga automatiska tester. Provrendera en mall i både 16:9 och 9:16 efter ändringar.
 - Tagga releaser som `vX.Y.Z`. Taggarna syns som releaser i XP-systemet.
 
 ## Nästa steg
-- Fältnamnen i webb-UI:t och i `list` är på svenska ("Rubrik", "Punkter"), medan README är på engelska. Översätt dem för publika användare.
 - Automatiska tester, till exempel en snabb rendering av varje mall.
 - Fler mallar efter behov i videorna.

@@ -1,16 +1,16 @@
 <!doctype html>
 <html data-composition-variables='[
-  {"id":"title","type":"string","label":"Rubrik","default":"What you need to know","hint":"Short headline, max 6 words"},
-  {"id":"points","type":"string","label":"Punkter, en per rad (2-5, *ord* = markerat)","default":"Runs *locally* on your machine\nNo per-render fees\nWorks with any coding agent\nOpen source under Apache 2.0","ui":"textarea","hint":"2-5 short key points from the narration, one per line, max 7 words each"},
-  {"id":"cues","type":"string","label":"Tidpunkter per punkt (valfritt, sätts av Studio)","default":""},
-  {"id":"source","type":"string","label":"Källa","default":""},
-  {"id":"duration","type":"number","label":"Längd (sekunder)","default":7},
+  {"id":"title","type":"string","label":"Title","default":"What you need to know","hint":"Short headline, max 6 words"},
+  {"id":"points","type":"string","label":"Points, one per line (2-5, *word* = highlighted)","default":"Runs *locally* on your machine\nNo per-render fees\nWorks with any coding agent\nOpen source under Apache 2.0","ui":"textarea","hint":"2-5 short key points from the narration, one per line, max 7 words each"},
+  {"id":"cues","type":"string","label":"Time per item in seconds (optional, set by Studio)","default":""},
+  {"id":"source","type":"string","label":"Source","default":""},
+  {"id":"duration","type":"number","label":"Duration (seconds)","default":7},
   {"id":"accent","type":"color","label":"Accent","default":"#8b5cf6"},
   {"id":"accent2","type":"color","label":"Accent 2","default":"#22d3ee"}
 ]'>
 <head>
   <meta charset="utf-8">
-  <title>Checklista</title>
+  <title>Checklist</title>
   <meta name="description" content="2-5 key points, each ticked off with a check mark as it appears.">
   <meta name="motion-use" content="The narration sums up key points, features, requirements or takeaways (what is new, what you need, why it matters).">
   <link rel="stylesheet" href="_shared/base.css">
